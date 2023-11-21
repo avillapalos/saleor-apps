@@ -95,7 +95,7 @@ const handler: NextWebhookApiHandler<CheckoutCreatedWebhookPayloadFragment> = as
   }
 
   const response = await sendCheckoutSlackMessage(webhookUrl, {
-    saleorApiUrl: authData.saleorApiUrl,
+    saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL || saleorApiUrl,
     checkout: payload.checkout,
   });
 
