@@ -21,7 +21,8 @@ export const handler = async (
   } = ctx;
 
   const client = createGraphQLClient({
-    saleorApiUrl,
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL || saleorApiUrl,
     token,
   });
 

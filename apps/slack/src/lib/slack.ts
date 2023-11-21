@@ -1,4 +1,4 @@
-import { OrderCreatedWebhookPayloadFragment } from "../../generated/graphql";
+import {CheckoutCreatedWebhookPayloadFragment, OrderCreatedWebhookPayloadFragment} from "../../generated/graphql";
 
 export const sendSlackMessage = async (
   to: string,
@@ -72,6 +72,38 @@ export const sendSlackMessage = async (
           },
         },
       ],
+    }),
+  });
+
+  return response;
+};
+
+export const sendCheckoutSlackMessage = async (
+    to: string,
+    data: {
+      checkout?: Exclude<CheckoutCreatedWebhookPayloadFragment["checkout"], undefined | null>;
+      saleorApiUrl: string;
+    }
+) => {
+  const {
+    saleorApiUrl,
+    checkout: undefined,
+  } = data;
+
+  const dashboardUrl = saleorApiUrl.replace("/graphql/", "/dashboard/");
+
+  const response = await fetch(to, {
+    method: "POST",
+    body: JSON.stringify({
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `Checkout has been created 🎉`,
+          },
+        },
+      ]
     }),
   });
 

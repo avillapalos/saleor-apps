@@ -3,6 +3,7 @@ import { AppManifest } from "@saleor/app-sdk/types";
 
 import packageJson from "../../../package.json";
 import { orderCreatedWebhook } from "./webhooks/order-created";
+import {checkoutCreatedWebhook} from "./webhooks/checkout-created";
 
 const handler = createManifestHandler({
   async manifestFactory({ appBaseUrl }) {
@@ -24,11 +25,14 @@ const handler = createManifestHandler({
       homepageUrl: "https://github.com/saleor/apps",
       id: "saleor.app.slack",
       name: "Slack",
-      permissions: ["MANAGE_ORDERS"],
+      permissions: ["MANAGE_ORDERS", "MANAGE_CHECKOUTS"],
       supportUrl: "https://github.com/saleor/apps/discussions",
       tokenTargetUrl: `${apiBaseURL}/api/register`,
       version: packageJson.version,
-      webhooks: [orderCreatedWebhook.getWebhookManifest(apiBaseURL)],
+      webhooks: [
+        orderCreatedWebhook.getWebhookManifest(apiBaseURL),
+        checkoutCreatedWebhook.getWebhookManifest(apiBaseURL)
+      ],
     };
 
     return manifest;

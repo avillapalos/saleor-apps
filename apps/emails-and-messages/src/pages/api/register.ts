@@ -27,7 +27,7 @@ export default createAppRegisterHandler({
       return true;
     },
   ],
-  async onRequestVerified(req, { authData: { token, saleorApiUrl }, respondWithError }) {
+  async onRequestVerified(req, context) {
     const logger = createLogger({
       name: "onRequestVerified",
     });
@@ -36,8 +36,9 @@ export default createAppRegisterHandler({
 
     try {
       const client = createGraphQLClient({
-        saleorApiUrl: saleorApiUrl,
-        token: token,
+        // eslint-disable-next-line turbo/no-undeclared-env-vars
+        saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL || context.authData.saleorApiUrl,
+        token: context.authData.token,
       });
 
       saleorVersion = await fetchSaleorVersion(client);
@@ -45,19 +46,19 @@ export default createAppRegisterHandler({
       const message = (e as Error)?.message ?? "Unknown error";
 
       logger.debug(
-        { message, saleorApiUrl },
+        { message, saleorApiUrl: context.authData.saleorApiUrl },
         "Error during fetching saleor version in onRequestVerified handler"
       );
 
-      throw respondWithError({
+      throw context.respondWithError({
         message: "Couldn't communicate with Saleor API",
         status: 400,
       });
     }
 
     if (!saleorVersion) {
-      logger.warn({ saleorApiUrl }, "No version returned from Saleor API");
-      throw respondWithError({
+      logger.warn({ saleorApiUrl: context.authData.saleorApiUrl }, "No version returned from Saleor API");
+      throw context.respondWithError({
         message: "Saleor version couldn't be fetched from the API",
         status: 400,
       });
@@ -68,13 +69,21 @@ export default createAppRegisterHandler({
     );
 
     if (!isVersionValid) {
-      logger.info({ saleorApiUrl }, "Rejecting installation due to incompatible Saleor version");
-      throw respondWithError({
+      logger.info({ saleorApiUrl: context.authData.saleorApiUrl }, "Rejecting installation due to incompatible Saleor version");
+      throw context.respondWithError({
         message: `Saleor version (${saleorVersion}) is not compatible with this app version (${REQUIRED_SALEOR_VERSION})`,
         status: 400,
       });
     }
 
     logger.info("Saleor version validated successfully");
+
+    // context.authData.saleorApiUrl = context.authData.saleorApiUrl + "?app=emails-and-messages";
+
+    try {
+      await saleorApp.apl.set(context.authData);
+    } catch (error) {
+      console.error(`Failed to register app`, error);
+    }
   },
 });

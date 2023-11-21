@@ -22,6 +22,15 @@ const handler = createAppRegisterHandler({
       return true;
     },
   ],
+  onRequestVerified: async (request, context) => {
+    context.authData.saleorApiUrl = context.authData.saleorApiUrl + "?app=slack";
+
+    try {
+      await saleorApp.apl.set(context.authData);
+    } catch (error) {
+      console.error(`Failed to register app`, error);
+    }
+  },
 });
 
 export default handler;

@@ -15,7 +15,16 @@ import { trpcClient } from "../modules/trpc/trpc-client";
  * Ensure instance is a singleton.
  * TODO: This is React 18 issue, consider hiding this workaround inside app-sdk
  */
-export const appBridgeInstance = typeof window !== "undefined" ? new AppBridge() : undefined;
+export const appBridgeInstance =
+    typeof window !== "undefined"
+        ? new AppBridge({
+            // eslint-disable-next-line turbo/no-undeclared-env-vars
+            saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL,
+            autoNotifyReady: true,
+            initialLocale: "en",
+            initialTheme: "light",
+        })
+        : undefined;
 
 function NextApp({ Component, pageProps }: AppProps) {
   return (
