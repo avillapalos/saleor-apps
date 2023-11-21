@@ -76,14 +76,15 @@ export const orderCreatedWebhook = new SaleorAsyncWebhook<OrderCreatedWebhookPay
 const handler: NextWebhookApiHandler<OrderCreatedWebhookPayloadFragment> = async (
   req,
   res,
-  context
+  context,
 ) => {
   const { payload, authData } = context;
 
   const { saleorApiUrl, token, appId } = authData;
 
   const client = createGraphQLClient({
-    saleorApiUrl,
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL || saleorApiUrl,
     token,
   });
 

@@ -4,34 +4,34 @@ import { gql } from "urql";
 import { CheckoutCreatedWebhookPayloadFragment } from "../../../../generated/graphql";
 import { createSettingsManager } from "../../../lib/metadata";
 import { saleorApp } from "../../../lib/saleor-app";
-import {sendCheckoutSlackMessage} from "../../../lib/slack";
+import { sendCheckoutSlackMessage } from "../../../lib/slack";
 import { createGraphQLClient } from "@saleor/apps-shared";
 
 const CheckoutCreatedWebhookPayload = gql`
   fragment CheckoutCreatedWebhookPayload on CheckoutCreated {
-    checkout{
+    checkout {
       id
       created
       email
       voucherCode
-      totalPrice{
+      totalPrice {
         currency
-        gross{
+        gross {
           amount
         }
       }
       lines {
         quantity
-        unitPrice{
+        unitPrice {
           currency
-          gross{
+          gross {
             amount
           }
         }
-        variant{
+        variant {
           id
           name
-          product{
+          product {
             id
             name
           }
@@ -50,26 +50,29 @@ const CheckoutCreatedGraphqlSubscription = gql`
   }
 `;
 
-export const checkoutCreatedWebhook = new SaleorAsyncWebhook<CheckoutCreatedWebhookPayloadFragment>({
-  name: "Checkout Created in Saleor",
-  webhookPath: "api/webhooks/checkout-created",
-  event: "CHECKOUT_CREATED",
-  apl: saleorApp.apl,
-  query: CheckoutCreatedGraphqlSubscription,
-});
+export const checkoutCreatedWebhook = new SaleorAsyncWebhook<CheckoutCreatedWebhookPayloadFragment>(
+  {
+    name: "Checkout Created in Saleor",
+    webhookPath: "api/webhooks/checkout-created",
+    event: "CHECKOUT_CREATED",
+    apl: saleorApp.apl,
+    query: CheckoutCreatedGraphqlSubscription,
+  },
+);
 
 const handler: NextWebhookApiHandler<CheckoutCreatedWebhookPayloadFragment> = async (
-    req,
-    res,
-    context
+  req,
+  res,
+  context,
 ) => {
-  console.log("Checkout created webhook received")
+  console.log("Checkout created webhook received");
   const { payload, authData } = context;
 
   const { saleorApiUrl, token, appId } = authData;
 
   const client = createGraphQLClient({
-    saleorApiUrl,
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL || saleorApiUrl,
     token,
   });
 
@@ -81,12 +84,14 @@ const handler: NextWebhookApiHandler<CheckoutCreatedWebhookPayloadFragment> = as
     return res.status(400).send({
       success: false,
       message:
-          "The application has not been configured yet - Missing webhook URL configuration value",
+        "The application has not been configured yet - Missing webhook URL configuration value",
     });
   }
 
   if (!payload.checkout) {
-    return res.status(400).send({ success: false, message: "Checkout not found in request payload" });
+    return res
+      .status(400)
+      .send({ success: false, message: "Checkout not found in request payload" });
   }
 
   const response = await sendCheckoutSlackMessage(webhookUrl, {
