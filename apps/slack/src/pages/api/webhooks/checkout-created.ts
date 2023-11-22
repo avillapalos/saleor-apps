@@ -65,14 +65,12 @@ const handler: NextWebhookApiHandler<CheckoutCreatedWebhookPayloadFragment> = as
   res,
   context,
 ) => {
-  console.log("Checkout created webhook received");
   const { payload, authData } = context;
 
   const { saleorApiUrl, token, appId } = authData;
 
   const client = createGraphQLClient({
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
-    saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL || saleorApiUrl,
+    saleorApiUrl,
     token,
   });
 
@@ -95,7 +93,7 @@ const handler: NextWebhookApiHandler<CheckoutCreatedWebhookPayloadFragment> = as
   }
 
   const response = await sendCheckoutSlackMessage(webhookUrl, {
-    saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL || saleorApiUrl,
+    saleorApiUrl,
     checkout: payload.checkout,
   });
 

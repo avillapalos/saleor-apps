@@ -32,7 +32,7 @@ export const sendSlackMessage = async (
 
   const dashboardUrl = saleorApiUrl.replace("/graphql/", "/dashboard/");
 
-  const response = await fetch(to, {
+  return await fetch(to, {
     method: "POST",
     body: JSON.stringify({
       blocks: [
@@ -74,8 +74,6 @@ export const sendSlackMessage = async (
       ],
     }),
   });
-
-  return response;
 };
 
 export const sendCheckoutSlackMessage = async (
@@ -92,7 +90,7 @@ export const sendCheckoutSlackMessage = async (
 
   const dashboardUrl = saleorApiUrl.replace("/graphql/", "/dashboard/");
 
-  const response = await fetch(to, {
+  return await fetch(to, {
     method: "POST",
     body: JSON.stringify({
       blocks: [
@@ -106,6 +104,4 @@ export const sendCheckoutSlackMessage = async (
       ]
     }),
   });
-
-  return response;
 };

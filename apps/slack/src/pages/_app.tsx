@@ -2,8 +2,7 @@ import "@saleor/macaw-ui/next/style";
 import { AppBridge, AppBridgeProvider } from "@saleor/app-sdk/app-bridge";
 import React from "react";
 import { AppProps } from "next/app";
-import { RoutePropagator } from "@saleor/app-sdk/app-bridge/next";
-import { Box, ThemeProvider } from "@saleor/macaw-ui/next";
+import { ThemeProvider } from "@saleor/macaw-ui/next";
 import { NoSSRWrapper } from "@saleor/apps-shared";
 import { ThemeSynchronizer } from "../hooks/theme-synchronizer";
 
@@ -14,7 +13,7 @@ export const appBridgeInstance =
     typeof window !== "undefined"
         ? new AppBridge({
             // eslint-disable-next-line turbo/no-undeclared-env-vars
-            saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL + "?app=slack",
+            saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL,
             autoNotifyReady: true,
             initialLocale: "en",
             initialTheme: "light",

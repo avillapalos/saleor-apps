@@ -21,8 +21,7 @@ export const handler = async (
   } = ctx;
 
   const client = createGraphQLClient({
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
-    saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL || saleorApiUrl,
+    saleorApiUrl,
     token,
   });
 
@@ -59,4 +58,8 @@ export const handler = async (
   }
 };
 
-export default createProtectedHandler(handler, saleorApp.apl, ["MANAGE_APPS", "MANAGE_ORDERS"]);
+export default createProtectedHandler(
+    handler,
+    saleorApp.apl,
+    ["MANAGE_APPS", "MANAGE_ORDERS", "MANAGE_CHECKOUTS"]
+);

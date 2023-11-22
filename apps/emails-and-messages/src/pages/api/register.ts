@@ -78,8 +78,6 @@ export default createAppRegisterHandler({
 
     logger.info("Saleor version validated successfully");
 
-    // context.authData.saleorApiUrl = context.authData.saleorApiUrl + "?app=emails-and-messages";
-
     try {
       await saleorApp.apl.set(context.authData);
     } catch (error) {

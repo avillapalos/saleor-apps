@@ -105,7 +105,7 @@ const handler: NextWebhookApiHandler<OrderCreatedWebhookPayloadFragment> = async
   }
 
   const response = await sendSlackMessage(webhookUrl, {
-    saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL || saleorApiUrl,
+    saleorApiUrl,
     order: payload.order,
   });
 

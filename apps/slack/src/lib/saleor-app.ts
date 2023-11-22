@@ -1,5 +1,6 @@
-import { APL, FileAPL, SaleorCloudAPL, UpstashAPL } from "@saleor/app-sdk/APL";
+import { APL, FileAPL, SaleorCloudAPL } from "@saleor/app-sdk/APL";
 import { SaleorApp } from "@saleor/app-sdk/saleor-app";
+import { UpstashAPL } from "./apl/upstash-apl";
 
 /**
  * By default, auth data are stored in the `.auth-data.json` (FileAPL).
@@ -13,7 +14,6 @@ let apl: APL;
 
 switch (process.env.APL) {
   case "upstash":
-    // Require `UPSTASH_URL` and `UPSTASH_TOKEN` environment variables
     apl = new UpstashAPL();
     break;
   case "saleor-cloud": {
