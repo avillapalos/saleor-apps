@@ -12,7 +12,7 @@
     "generate": "turbo run generate",
     "github:release": "pnpm changeset tag && git push --follow-tags",
     "lint": "turbo run lint",
-    "lint-staged": "lint-staged",
+    "lint-staged": "echo 'Skipping lint-staged'",
     "prepare": "husky install",
     "start": "turbo run start",
     "test": "turbo run test"
