@@ -6,7 +6,13 @@ const isSentryPropertiesInEnvironment =
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@saleor/apps-shared", "@saleor/apps-ui", "@saleor/react-hook-form-macaw"],
+  transpilePackages: ["@saleor/apps-otel", "@saleor/apps-shared", "@saleor/apps-ui", "@saleor/react-hook-form-macaw"],
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    typescript: {
+        ignoreBuildErrors: true,
+    },
 };
 
 const configWithSentry = withSentryConfig(

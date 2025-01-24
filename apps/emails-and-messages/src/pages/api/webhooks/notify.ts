@@ -46,6 +46,7 @@ const handler: NextWebhookApiHandler<NotifySubscriptionPayload> = async (req, re
   const client = createGraphQLClient({
     saleorApiUrl: authData.saleorApiUrl,
     token: authData.token,
+    dashboardUrl: authData.dashboardUrl,
   });
 
   await sendEventMessages({

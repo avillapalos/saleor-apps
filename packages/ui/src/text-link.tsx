@@ -1,6 +1,7 @@
-import { actions, useAppBridge } from "@saleor/app-sdk/app-bridge";
+import { actions } from "@saleor/app-sdk/app-bridge";
 import { Text, TextProps } from "@saleor/macaw-ui/next";
 import { useRouter } from "next/router";
+import { appBridgeInstance } from "../../../apps/emails-and-messages/src/pages/_app";
 
 export interface TextLinkProps extends TextProps {
   href: string;
@@ -26,19 +27,18 @@ const BaseTextLink = (props: TextLinkProps) => {
 };
 
 export const TextLink = ({ href, newTab = false, children, ...props }: TextLinkProps) => {
-  const { appBridge } = useAppBridge();
   const { push } = useRouter();
 
   const onNewTabClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault();
 
-    if (!appBridge) {
+    if (!appBridgeInstance) {
       console.warn(
         "App bridge is not initialized, TextLink cannot be used with external links without it."
       );
     }
 
-    appBridge?.dispatch(
+    appBridgeInstance?.dispatch(
       actions.Redirect({
         to: href,
         newContext: true,

@@ -1,6 +1,7 @@
-import { APL, FileAPL, SaleorCloudAPL } from "@saleor/app-sdk/APL";
+import { FileAPL, SaleorCloudAPL } from "@saleor/app-sdk/APL";
 import { SaleorApp } from "@saleor/app-sdk/saleor-app";
 import { UpstashAPL } from "./lib/apl/upstash-apl";
+import {APL} from "./lib/apl/apl-interfaces";
 
 const aplType = process.env.APL ?? "file";
 

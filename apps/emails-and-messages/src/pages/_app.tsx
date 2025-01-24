@@ -17,16 +17,11 @@ import { trpcClient } from "../modules/trpc/trpc-client";
  */
 export const appBridgeInstance =
     typeof window !== "undefined"
-        ? new AppBridge({
-            // eslint-disable-next-line turbo/no-undeclared-env-vars
-            saleorApiUrl: process.env.NEXT_PUBLIC_SALEOR_API_URL,
-            autoNotifyReady: true,
-            initialLocale: "en",
-            initialTheme: "light",
-        })
+        ? new AppBridge()
         : undefined;
 
 function NextApp({ Component, pageProps }: AppProps) {
+
   return (
     <NoSSRWrapper>
       <AppBridgeProvider appBridgeInstance={appBridgeInstance}>

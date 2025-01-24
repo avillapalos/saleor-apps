@@ -67,6 +67,7 @@ const handler: NextWebhookApiHandler<OrderConfirmedWebhookPayloadFragment> = asy
   const client = createGraphQLClient({
     saleorApiUrl: authData.saleorApiUrl,
     token: authData.token,
+    dashboardUrl: authData.dashboardUrl,
   });
 
   await sendEventMessages({

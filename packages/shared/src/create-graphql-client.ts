@@ -1,9 +1,14 @@
 import { authExchange } from "@urql/exchange-auth";
-import { cacheExchange, createClient as urqlCreateClient, fetchExchange } from "urql";
+import { cacheExchange, createClient as urqlCreateClient, Exchange, fetchExchange } from "urql";
 
-interface CreateGraphQLClientArgs {
+export interface CreateGraphQLClientArgs {
   saleorApiUrl: string;
   token?: string;
+  appId?: string;
+  dashboardUrl?: string;
+  opts?: {
+    prependingFetchExchanges?: Exchange[];
+  };
 }
 
 /*
@@ -17,7 +22,7 @@ interface CreateGraphQLClientArgs {
  *
  * In the context of developing Apps, the two first options are recommended.
  */
-export const createGraphQLClient = ({ saleorApiUrl, token }: CreateGraphQLClientArgs) => {
+export const createGraphQLClient = ({ saleorApiUrl, token, dashboardUrl }: CreateGraphQLClientArgs) => {
   return urqlCreateClient({
     url: saleorApiUrl,
     exchanges: [
@@ -31,7 +36,12 @@ export const createGraphQLClient = ({ saleorApiUrl, token }: CreateGraphQLClient
                 }
               : {};
 
-            return utils.appendHeaders(operation, headers);
+            const customHeaders: Record<string, string> = {
+              Origin: "https://" + dashboardUrl,
+              Referer: "https://" + dashboardUrl,
+            };
+
+            return utils.appendHeaders(operation, { ...headers, ...customHeaders });
           },
           didAuthError(error) {
             return error.graphQLErrors.some((e) => e.extensions?.code === "FORBIDDEN");

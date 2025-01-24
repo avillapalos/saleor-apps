@@ -64,7 +64,6 @@ export class UpstashAPL implements APL {
     }
 
     private async upstashRequest(request: any): Promise<any> {
-        console.log("Sending request to Upstash");
         if (!this.restURL || !this.restToken) {
             throw new Error(
                 "UpstashAPL is not configured. See https://github.com/saleor/saleor-app-sdk/blob/main/docs/apl.md"
@@ -87,7 +86,6 @@ export class UpstashAPL implements APL {
         const parsedResponse = await response.json();
 
         if (!response.ok || "error" in parsedResponse) {
-            console.log(`Operation unsuccessful. Upstash API has responded with ${response.status} code`);
             if ("error" in parsedResponse) {
                 console.log("Error message: %s", parsedResponse.error);
                 throw new Error(
@@ -98,15 +96,10 @@ export class UpstashAPL implements APL {
                 `Upstash APL was not able to perform operation. Status code: ${response.status}`
             );
         }
-        console.log("Upstash service responded successfully");
         return parsedResponse.result;
     }
 
     private async saveDataToUpstash(authData: AuthData) {
-        console.log("saveDataToUpstash() called with: %j", {
-            saleorApiUrl: authData.saleorApiUrl,
-            token: authData.token.substring(0, 4)
-        });
         const data = JSON.stringify(authData);
 
         await this.upstashRequest(["SET", authData.saleorApiUrl + "@slack", data]);

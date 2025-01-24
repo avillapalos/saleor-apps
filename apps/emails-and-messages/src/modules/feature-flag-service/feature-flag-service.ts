@@ -15,10 +15,12 @@ const logger = createLogger({
 export class FeatureFlagService {
   private client: Client;
   private saleorVersion?: string;
+  private appId?: string;
 
-  constructor(args: { client: Client; saleorVersion?: string }) {
+  constructor(args: { client: Client; saleorVersion?: string, appId?: string }) {
     this.client = args.client;
     this.saleorVersion = args.saleorVersion;
+    this.appId = args.appId;
   }
 
   public getSaleorVersion = async (): Promise<string> => {

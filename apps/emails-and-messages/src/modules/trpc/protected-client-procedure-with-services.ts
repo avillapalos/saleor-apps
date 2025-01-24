@@ -27,19 +27,20 @@ export const protectedWithConfigurationServices = protectedClientProcedure.use(
      */
     const featureFlagService = new FeatureFlagService({
       client: ctx.apiClient,
+      appId: ctx.appId as string,
     });
 
     const smtpConfigurationService = new SmtpConfigurationService({
       metadataManager: new SmtpPrivateMetadataManager(
-        createSettingsManager(ctx.apiClient, ctx.appId!),
-        ctx.saleorApiUrl
+        createSettingsManager(ctx.apiClient, ctx.appId! as string),
+        ctx.saleorApiUrl,
       ),
       featureFlagService,
     });
 
     const sendgridConfigurationService = new SendgridConfigurationService({
       metadataManager: new SendgridPrivateMetadataManager(
-        createSettingsManager(ctx.apiClient, ctx.appId!),
+        createSettingsManager(ctx.apiClient, ctx.appId! as string),
         ctx.saleorApiUrl
       ),
       featureFlagService,
@@ -56,10 +57,13 @@ export const protectedWithConfigurationServices = protectedClientProcedure.use(
     if (meta?.updateWebhooks) {
       logger.debug("Updating webhooks");
 
+      console.log("APP ID:", ctx.appId)
+
       const webhookManagementService = new WebhookManagementService({
-        appBaseUrl: ctx.baseUrl,
+        appBaseUrl: ctx.baseUrl as string,
         client: ctx.apiClient,
         featureFlagService: featureFlagService,
+        appId: ctx.appId as string,
       });
 
       await syncWebhookStatus({

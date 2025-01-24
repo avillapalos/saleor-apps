@@ -53,15 +53,18 @@ export class WebhookManagementService {
   private appBaseUrl: string;
   private client: Client;
   private featureFlagService: FeatureFlagService;
+  private appId: string;
 
   constructor(args: {
     appBaseUrl: string;
     client: Client;
     featureFlagService: FeatureFlagService;
+    appId: string;
   }) {
     this.appBaseUrl = args.appBaseUrl;
     this.client = args.client;
     this.featureFlagService = args.featureFlagService;
+    this.appId = args.appId;
   }
 
   // Returns list of webhooks registered for the App in the Saleor instance
@@ -112,7 +115,7 @@ export class WebhookManagementService {
         asyncEvents: asyncWebhooks as WebhookEventTypeAsyncEnum[],
         isActive: true,
         name: webhookManifest.name,
-        targetUrl: webhookManifest.targetUrl,
+        targetUrl: webhookManifest.targetUrl + "?appId=" + this.appId,
         // Override empty queries to handle NOTIFY webhook
         query: webhookManifest.query === "{}" ? undefined : webhookManifest.query,
       },

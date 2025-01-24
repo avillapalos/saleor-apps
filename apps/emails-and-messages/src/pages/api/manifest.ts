@@ -4,7 +4,8 @@ import { AppManifest } from "@saleor/app-sdk/types";
 import packageJson from "../../../package.json";
 
 export default createManifestHandler({
-  async manifestFactory({ appBaseUrl }) {
+  async manifestFactory({ request, appBaseUrl }) {
+    const dashboardUrl = request.query.dashboardUrl as string || "";
     const iframeBaseUrl = process.env.APP_IFRAME_BASE_URL ?? appBaseUrl;
     const apiBaseURL = process.env.APP_API_BASE_URL ?? appBaseUrl;
 
@@ -34,7 +35,7 @@ export default createManifestHandler({
        */
       requiredSaleorVersion: ">=3.10 <4",
       supportUrl: "https://github.com/saleor/apps/discussions",
-      tokenTargetUrl: `${apiBaseURL}/api/register`,
+      tokenTargetUrl: `${apiBaseURL}/api/register?dashboardUrl=${dashboardUrl}`,
       version: packageJson.version,
     };
 

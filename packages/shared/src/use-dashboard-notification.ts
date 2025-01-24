@@ -1,13 +1,13 @@
 import { useCallback } from "react";
 import { actions, useAppBridge } from "@saleor/app-sdk/app-bridge";
+import { appBridgeInstance } from "../../../apps/emails-and-messages/src/pages/_app";
+
 
 export const useDashboardNotification = () => {
-  const { appBridge } = useAppBridge();
-
   return {
     notifySuccess: useCallback(
       (title: string, text?: string) => {
-        appBridge?.dispatch(
+        appBridgeInstance?.dispatch(
           actions.Notification({
             status: "success",
             title,
@@ -15,11 +15,11 @@ export const useDashboardNotification = () => {
           })
         );
       },
-      [appBridge]
+      [appBridgeInstance]
     ),
     notifyError: useCallback(
       (title: string, text?: string, apiMessage?: string) => {
-        appBridge?.dispatch(
+        appBridgeInstance?.dispatch(
           actions.Notification({
             status: "error",
             title,
@@ -28,11 +28,11 @@ export const useDashboardNotification = () => {
           })
         );
       },
-      [appBridge]
+      [appBridgeInstance]
     ),
     notifyWarning: useCallback(
       (title: string, text?: string) => {
-        appBridge?.dispatch(
+        appBridgeInstance?.dispatch(
           actions.Notification({
             status: "warning",
             title,
@@ -40,11 +40,11 @@ export const useDashboardNotification = () => {
           })
         );
       },
-      [appBridge]
+      [appBridgeInstance]
     ),
     notifyInfo: useCallback(
       (title: string, text?: string) => {
-        appBridge?.dispatch(
+        appBridgeInstance?.dispatch(
           actions.Notification({
             status: "info",
             title,
@@ -52,7 +52,7 @@ export const useDashboardNotification = () => {
           })
         );
       },
-      [appBridge]
+      [appBridgeInstance]
     ),
   };
 };

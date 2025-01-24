@@ -4,6 +4,7 @@ export interface AuthData {
     token: string;
     saleorApiUrl: string;
     appId: string;
+    dashboardUrl: string;
     jwks?: string;
 }
 
