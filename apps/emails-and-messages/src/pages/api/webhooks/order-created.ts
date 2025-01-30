@@ -1,5 +1,5 @@
 import { OrderDetailsFragmentDoc } from "./../../../../generated/graphql";
-import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
 import { gql } from "urql";
 import { saleorApp } from "../../../saleor-app";
 import { createLogger, createGraphQLClient } from "@saleor/apps-shared";
@@ -36,50 +36,73 @@ const logger = createLogger({
   name: orderCreatedWebhook.webhookPath,
 });
 
-const handler: NextWebhookApiHandler<OrderCreatedWebhookPayloadFragment> = async (
-  req,
-  res,
-  context
-) => {
-  logger.debug("Webhook received");
+export default async function (req, res) {
+  try {
+    // ✅ Read request body manually (Saleor expects raw body)
+    const rawBody = await new Promise((resolve, reject) => {
+      let body = "";
+      req.on("data", chunk => body += chunk);
+      req.on("end", () => resolve(body));
+      req.on("error", reject);
+    });
 
-  const { payload, authData } = context;
-  const { order } = payload;
+    // ✅ Parse body safely
+    let payload;
+    try {
+      payload = JSON.parse(rawBody);
+    } catch (error) {
+      logger.error("🚨 Error parsing JSON:", error);
+      return res.status(400).json({ error: "Invalid JSON body" });
+    }
 
-  if (!order) {
-    logger.error("No order data payload");
-    return res.status(200).end();
+    // ✅ Get Saleor authentication data (replacing missing context)
+    const authData = await saleorApp.apl.get(req?.query?.appId || "");
+
+    if (!authData) {
+      logger.error("🚨 Failed to fetch Saleor auth data");
+      return res.status(401).json({ error: "Unauthorized: Missing auth data" });
+    }
+
+    logger.log("🔹 Extracted Saleor Auth Data:", authData);
+
+    // ✅ Extract order details
+    const { order } = payload;
+    if (!order) {
+      logger.error("🚨 No order data received");
+      return res.status(400).json({ error: "Missing order data" });
+    }
+
+    // ✅ Custom logic (e.g., sending emails)
+    const recipientEmail = order.userEmail || order.user?.email;
+    if (!recipientEmail) {
+      logger.error("🚨 Order has no email recipient");
+      return res.status(400).json({ error: "Order has no recipient email" });
+    }
+
+    const channel = order.channel.slug ?? "shop";
+    const client = createGraphQLClient({
+      saleorApiUrl: authData.saleorApiUrl,
+      token: authData.token,
+      dashboardUrl: authData.dashboardUrl,
+    });
+
+    // (Optional) Example of sending event messages
+    await sendEventMessages({
+      authData,
+      channel,
+      client,
+      event: "ORDER_CREATED",
+      payload: { order },
+      recipientEmail,
+    });
+
+    return res.status(200).json({ message: "Webhook processed" });
+
+  } catch (error) {
+    logger.error("🚨 UNHANDLED ERROR:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
-
-  const recipientEmail = order.userEmail || order.user?.email;
-
-  if (!recipientEmail?.length) {
-    logger.error(`The order ${order.number} had no email recipient set. Aborting.`);
-    return res
-      .status(200)
-      .json({ error: "Email recipient has not been specified in the event payload." });
-  }
-
-  const channel = order.channel.slug;
-  const client = createGraphQLClient({
-    saleorApiUrl: authData.saleorApiUrl,
-    token: authData.token,
-    dashboardUrl: authData.dashboardUrl,
-  });
-
-  await sendEventMessages({
-    authData,
-    channel,
-    client,
-    event: "ORDER_CREATED",
-    payload: { order: payload.order },
-    recipientEmail,
-  });
-
-  return res.status(200).json({ message: "The event has been handled" });
-};
-
-export default orderCreatedWebhook.createHandler(handler);
+}
 
 export const config = {
   api: {
